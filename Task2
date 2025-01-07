@@ -1,35 +1,103 @@
 #include <iostream>
-#include <cstdlib>
-#include <ctime>
+#include <fstream>
+#include <string>
+using namespace std;
+
+void createFile(const string& filename) {
+    ofstream file(filename);
+    if (file) {
+        cout << "File '" << filename << "' created successfully.\n";
+    } else {
+        cout << "Error creating file '" << filename << "'.\n";
+    }
+    file.close();
+}
+
+void writeFile(const string& filename) {
+    ofstream file(filename, ios::app); // Open in append mode
+    if (file) {
+        cout << "Enter content to write to the file (type 'exit' to stop):\n";
+        string line;
+        while (true) {
+            getline(cin, line);
+            if (line == "exit") break;
+            file << line << "\n";
+        }
+        cout << "Content written to '" << filename << "'.\n";
+    } else {
+        cout << "Error opening file '" << filename << "' for writing.\n";
+    }
+    file.close();
+}
+
+void readFile(const string& filename) {
+    ifstream file(filename);
+    if (file) {
+        cout << "Content of '" << filename << "':\n";
+        string line;
+        while (getline(file, line)) {
+            cout << line << "\n";
+        }
+    } else {
+        cout << "Error opening file '" << filename << "' for reading.\n";
+    }
+    file.close();
+}
+
+void deleteFile(const string& filename) {
+    if (remove(filename.c_str()) == 0) {
+        cout << "File '" << filename << "' deleted successfully.\n";
+    } else {
+        cout << "Error deleting file '" << filename << "'. File may not exist.\n";
+    }
+}
 
 int main() {
-    // Seed the random number generator with the current time
-    srand(static_cast<unsigned int>(time(0)));
+    int choice;
+    string filename;
 
-    // Randomly generate a number between 1 and 100
-    int number_to_guess = rand() % 100 + 1;
-    int user_guess = 0;
-    int attempts = 0;
+    while (true) {
+        cout << "\nFile Manager Menu:\n";
+        cout << "1. Create File\n";
+        cout << "2. Write to File\n";
+        cout << "3. Read File\n";
+        cout << "4. Delete File\n";
+        cout << "5. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+        cin.ignore(); // To handle the newline character after the choice input
 
-    std::cout << "Welcome to the Number Guessing Game!" << std::endl;
-    std::cout << "I have selected a number between 1 and 100. Try to guess it!" << std::endl;
+        switch (choice) {
+            case 1:
+                cout << "Enter the filename to create: ";
+                getline(cin, filename);
+                createFile(filename);
+                break;
 
-    // Loop until the user guesses the correct number
-    while (user_guess != number_to_guess) {
-        std::cout << "Enter your guess: ";
-        std::cin >> user_guess;
-        attempts++;
+            case 2:
+                cout << "Enter the filename to write to: ";
+                getline(cin, filename);
+                writeFile(filename);
+                break;
 
-        // Provide feedback to the user
-        if (user_guess < number_to_guess) {
-            std::cout << "Too low! Try again." << std::endl;
-        } else if (user_guess > number_to_guess) {
-            std::cout << "Too high! Try again." << std::endl;
-        } else {
-            std::cout << "Congratulations! You've guessed the correct number: " << number_to_guess << std::endl;
-            std::cout << "It took you " << attempts << " attempts." << std::endl;
+            case 3:
+                cout << "Enter the filename to read: ";
+                getline(cin, filename);
+                readFile(filename);
+                break;
+
+            case 4:
+                cout << "Enter the filename to delete: ";
+                getline(cin, filename);
+                deleteFile(filename);
+                break;
+
+            case 5:
+                cout << "Exiting File Manager. Goodbye!\n";
+                return 0;
+
+            default:
+                cout << "Invalid choice. Please try again.\n";
         }
     }
-
-    return 0;
 }
